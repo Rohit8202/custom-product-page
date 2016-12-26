@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	  <meta name="viewport" content="width=device-width, initial-scale=1">
+	  <link rel="stylesheet" href="main.css">
+	  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+	  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+	</head>
+	<body>
+		<div class="container" ng-app="shopping-app" ng-controller="shoppingCtrl" >
+			<div class="header">
+				<img src="https://placeholdit.imgix.net/~text?txtsize=33&txt=320%C3%97120&w=320&h=120" title="" width="320"/>
+				
+				
+			</div>
+			<div class="content">
+				<div class="left_filter">
+					<div class="filter_cls">
+						<input type="search" placeholder="Search.." ng-model="search"/>
+					</div>
+					<div class="filter_cls">
+						Sort By:
+						<select ng-model='sortBy'>
+							<option value='price'>Price</option>
+							<option value='rating'>Rating</option>
+							
+						</select>
+					</div>
+				</div>
+				<div class="product_list" >
+					<div class="product_detail" ng-repeat="x in mydata | filter: search | orderBy:sortBy:true ">
+						<div class="img_container"><img src="{{x.image}}" class="pro_img"><span class="pro_quantity">{{getQuantity(x.quantity)}}</span></img></div>
+						<div class="pro_description">
+							<p class="pro_name">{{x.name}} 
+								<span class="pro_info"><i class="fa fa-info-circle fa-lg"></i>
+									<span class="tooltip">{{x.description}}</span>
+								</span>
+							</p>
+							<p><span><i class="fa fa-inr"></i> {{x.price}}</span><span class="pro_rating">{{x.rating}} <i class="fa fa-star fa-1"></i></span></p>
+							<p><i class="fa fa-tags fa-lg"></i> <span ng-repeat="x in x.category track by $index">{{ x }}<span ng-if="!$last">, </span></span></p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		
+		<script>
+		var app= angular.module('shopping-app',[]);
+		
+		app.controller('shoppingCtrl',function($scope,$http,$filter){
+		var tags = [];
+		 $http.get("https://api.myjson.com/bins/1db7hr").then(function(response){
+			$scope.mydata = response.data;
+			
+			$scope.getCategory = function(category) {
+				if(category ==0) {
+					return "Apparel";
+				}
+				else {
+					return "Accessories";
+				}
+			}
+			$scope.sortBy = "rating";
+			
+			$scope.getQuantity = function(quant) {
+				var quantstr;
+				if(quant == 0) {
+					quantstr = "SOLD OUT";
+				}
+				else if(quant <= 5) {
+					quantstr = "Selling Fast! \n"+quant+" pcs Available";
+				}
+				else {
+					quantstr = quant + " pcs Available"
+				}
+				return quantstr;
+			}
+			
+			$scope.sort_fil = function(filter_name) {
+				$scope.filterName = filter_name;
+			}
+			
+		
+		}); 
+		
+      });
+		
+		
+	</script>
+	</body>
+</html>
